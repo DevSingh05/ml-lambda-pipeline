@@ -21,7 +21,8 @@ jobs:
 
       - name: Zip and upload Lambda code
         run: |
+          cd lambda/check-training-status
           zip function.zip lambda_function.py
           aws lambda update-function-code \
-            --function-name your-lambda-function-name \
+            --function-name check-training-status \
             --zip-file fileb://function.zip
