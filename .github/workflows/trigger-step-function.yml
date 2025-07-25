@@ -20,5 +20,5 @@ jobs:
     - name: Trigger Step Function
       run: |
         aws stepfunctions start-execution \
-          --state-machine-arn arn:aws:states:us-east-1:${{ secrets.AWS_ACCOUNT_ID }}:stateMachine:MLPipelineStateMachine \
+          --state-machine-arn arn:aws:states:us-east-1:809659887079:stateMachine:MLPipelineStateMachine \
           --input '{}'
