@@ -2,15 +2,15 @@ name: Trigger Step Function CI/CD
 
 on:
   push:
-    paths:
-      - 'step-functions/**'
+    branches:
+      - main 
 
 jobs:
   trigger-step-function:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout code
       uses: actions/checkout@v3
 
     - name: Configure AWS credentials
@@ -18,9 +18,9 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+        aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Trigger Step Function
+    - name: Trigger Step Function Execution
       run: |
         aws stepfunctions start-execution \
           --state-machine-arn arn:aws:states:us-east-1:809659887079:stateMachine:check-training-status-flow \
