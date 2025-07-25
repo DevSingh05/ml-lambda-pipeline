@@ -1,0 +1,55 @@
+{
+  "Comment": "Full ML training + deployment pipeline",
+  "StartAt": "StartTraining",
+  "States": {
+    "StartTraining": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:809659887079:function:TriggerTrainingJob",
+      "ResultPath": "$.startResult",
+      "Next": "WaitForTraining"
+    },
+    "WaitForTraining": {
+      "Type": "Wait",
+      "Seconds": 60,
+      "Next": "CheckTrainingStatus"
+    },
+    "CheckTrainingStatus": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:809659887079:function:check-training-status",
+      "Parameters": {
+        "TrainingJobName.$": "$.startResult.TrainingJobName"
+      },
+      "ResultPath": "$.statusResult",
+      "Next": "IsTrainingComplete"
+    },
+    "IsTrainingComplete": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.statusResult.status",
+          "StringEquals": "InProgress",
+          "Next": "WaitForTraining"
+        },
+        {
+          "Variable": "$.statusResult.status",
+          "StringEquals": "Completed",
+          "Next": "DeployModel"
+        }
+      ],
+      "Default": "FailState"
+    },
+    "DeployModel": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:809659887079:function:deploy-model",
+      "Parameters": {
+        "TrainingJobName.$": "$.startResult.TrainingJobName"
+      },
+      "End": true
+    },
+    "FailState": {
+      "Type": "Fail",
+      "Error": "TrainingFailed",
+      "Cause": "The training job did not complete successfully."
+    }
+  }
+}
