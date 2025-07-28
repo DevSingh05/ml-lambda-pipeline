@@ -1,6 +1,6 @@
 import boto3
 
-def lambda_handler(event, context):
+def lambda_handler(event, context): # testing a run
     job_name = event["TrainingJobName"]
     sm_client = boto3.client("sagemaker")
 
